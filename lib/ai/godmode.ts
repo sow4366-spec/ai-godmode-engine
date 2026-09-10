@@ -1,4 +1,3 @@
-// FILE: lib/ai/godmode.ts
 import { callAI } from "./callAI";
 
 export async function godmodeEngine(prompt: string) {
@@ -25,3 +24,4 @@ Sois précis, utile et direct.`;
 
   return await callAI({ system, user: prompt });
 }
+
