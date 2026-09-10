@@ -1,39 +1,47 @@
-import { NextRequest, NextResponse } from "next/server";
-import { godmodeEngine } from "@/lib/ai/godmode";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import OpenAI from "openai";
 
-// Force la route à être dynamique (évite l'erreur "Failed to collect page data")
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs"; // recommandé avec Prisma
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const prompt = body.prompt?.trim();
+    const { prompt } = await req.json();
 
     if (!prompt) {
+      return NextResponse.json({ error: "Prompt manquant" }, { status: 400 });
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: "Le prompt est requis" },
-        { status: 400 }
+        { error: "OPENAI_API_KEY manquante sur Vercel" },
+        { status: 500 }
       );
     }
 
-    const answer = await godmodeEngine(prompt);
-
-    const session = await prisma.session.create({
-      data: {
-        title: prompt.slice(0, 80),
-        prompt,
-        response: answer,
-        engine: "godmode",
-      },
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: "Tu es GODMODE ENGINE, une IA ultra-puissante multi-agents. Réponds de façon claire, intelligente et utile.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.7,
     });
 
-    return NextResponse.json({ session, answer });
-  } catch (error) {
-    console.error("Erreur dans /api/godmode:", error);
+    const result = completion.choices[0].message.content;
+
+    return NextResponse.json({ result });
+  } catch (error: any) {
+    console.error("Erreur Godmode:", error);
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      { error: error.message || "Erreur interne du serveur" },
       { status: 500 }
     );
   }
