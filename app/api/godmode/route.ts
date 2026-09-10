@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { godmodeEngine } from "@/lib/ai/godmode";
 import { prisma } from "@/lib/prisma";
 
+// Force la route à être dynamique (évite l'erreur "Failed to collect page data")
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // recommandé avec Prisma
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -21,8 +25,8 @@ export async function POST(req: NextRequest) {
         title: prompt.slice(0, 80),
         prompt,
         response: answer,
-        engine: "godmode"
-      }
+        engine: "godmode",
+      },
     });
 
     return NextResponse.json({ session, answer });
@@ -34,4 +38,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
