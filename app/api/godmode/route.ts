@@ -1,4 +1,3 @@
-// FILE: app/api/godmode/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { godmodeEngine } from "@/lib/ai/godmode";
 import { prisma } from "@/lib/prisma";
@@ -15,24 +14,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await godmodeEngine(prompt);
+    const answer = await godmodeEngine(prompt);
 
-    // Sauvegarde en base
-    await prisma.session.create({
+    const session = await prisma.session.create({
       data: {
-        title: prompt.slice(0, 80) + (prompt.length > 80 ? "..." : ""),
+        title: prompt.slice(0, 80),
         prompt,
-        response: result,
-        engine: "godmode",
-      },
+        response: answer,
+        engine: "godmode"
+      }
     });
 
-    return NextResponse.json({ result });
-  } catch (error: any) {
-    console.error("Godmode error:", error);
+    return NextResponse.json({ session, answer });
+  } catch (error) {
+    console.error("Erreur dans /api/godmode:", error);
     return NextResponse.json(
-      { error: error.message || "Erreur interne" },
+      { error: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
 }
+
