@@ -1,120 +1,97 @@
-// FILE: app/page.tsx
 "use client";
 
 import { useState } from "react";
 
-export default function HomePage() {
-  const [prompt, setPrompt] = useState("");
-  const [answer, setAnswer] = useState<string | null>(null);
+export default function Home() {
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleRun() {
-    if (!prompt.trim()) return;
-
+  const handleSubmit = async () => {
+    if (!input.trim()) return;
     setLoading(true);
-    setAnswer(null);
+    setResult("");
 
     try {
       const res = await fetch("/api/godmode", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: input }),
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Erreur serveur");
-      }
-
-      setAnswer(data.result);
-    } catch (e: any) {
-      setAnswer(`Erreur : ${e.message || "Impossible d'exécuter le moteur"}`);
+      if (!res.ok) throw new Error(data.error || "Erreur serveur");
+      setResult(data.result);
+    } catch (err: any) {
+      setResult("Erreur : " + (err.message || "Erreur interne du serveur"));
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "40px 20px",
-        gap: "24px",
-      }}
-    >
-      <h1 style={{ fontSize: "2.2rem", marginBottom: 0 }}>
-        AI GODMODE ENGINE
-      </h1>
-      <p
-        style={{
-          maxWidth: 620,
-          textAlign: "center",
-          opacity: 0.8,
-          lineHeight: 1.5,
-        }}
-      >
-        Plateforme IA full-stack avec agents autonomes, raisonnement avancé,
-        swarm, infinity engine, vision et voice.
-      </p>
+    <div className="min-h-screen bg-[#0a0a0f] text-white relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/40 via-transparent to-purple-950/30 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none" />
 
-      <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Décris la tâche complexe que tu veux que l'IA exécute..."
-        style={{
-          width: "100%",
-          maxWidth: 650,
-          minHeight: 140,
-          padding: 14,
-          borderRadius: 10,
-          border: "1px solid #374151",
-          background: "#020617",
-          color: "#f9fafb",
-          fontSize: 15,
-          resize: "vertical",
-        }}
-      />
+      <div className="relative z-10 max-w-3xl mx-auto px-6 py-12 flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-purple-300 bg-clip-text text-transparent">
+            AI GODMODE ENGINE
+          </h1>
+          <p className="mt-4 text-gray-400 text-lg max-w-xl mx-auto">
+            Plateforme IA full-stack avec agents autonomes, raisonnement avancé, swarm, infinity engine, vision et voice.
+          </p>
+        </header>
 
-      <button
-        onClick={handleRun}
-        disabled={loading || !prompt.trim()}
-        style={{
-          padding: "12px 28px",
-          borderRadius: 999,
-          border: "none",
-          background: loading ? "#4b5563" : "#22c55e",
-          color: "#020617",
-          fontWeight: 600,
-          fontSize: 15,
-          cursor: loading ? "not-allowed" : "pointer",
-          transition: "background 0.2s",
-        }}
-      >
-        {loading ? "Exécution en cours..." : "Lancer GODMODE ENGINE"}
-      </button>
+        {/* Main Card */}
+        <div className="flex-1 flex flex-col">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Décris la tâche complexe que tu veux que l'IA exécute..."
+              className="w-full h-40 bg-transparent border-none outline-none resize-none text-lg text-white placeholder:text-gray-500"
+            />
 
-      {answer && (
-        <section
-          style={{
-            marginTop: 20,
-            maxWidth: 800,
-            width: "100%",
-            padding: 20,
-            borderRadius: 14,
-            background: "#020617",
-            border: "1px solid #1f2937",
-            whiteSpace: "pre-wrap",
-            lineHeight: 1.6,
-          }}
-        >
-          <h2 style={{ marginTop: 0, marginBottom: 12 }}>Résultat</h2>
-          <div>{answer}</div>
-        </section>
-      )}
-    </main>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="px-8 py-3 rounded-xl font-medium bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white shadow-lg shadow-emerald-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Godmode en cours..." : "Lancer GODMODE ENGINE"}
+              </button>
+            </div>
+          </div>
+
+          {/* Result Zone */}
+          {(result || loading) && (
+            <div className="mt-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+              <h2 className="text-sm font-medium text-gray-400 mb-3 uppercase tracking-wider">
+                Résultat
+              </h2>
+              <div className="text-gray-200 whitespace-pre-wrap leading-relaxed">
+                {loading ? (
+                  <div className="flex items-center gap-3 text-gray-400">
+                    <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+                    Les agents travaillent...
+                  </div>
+                ) : (
+                  result
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <footer className="mt-12 text-center text-sm text-gray-600">
+          AI GODMODE ENGINE • Powered by advanced multi-agent systems
+        </footer>
+      </div>
+    </div>
   );
 }
