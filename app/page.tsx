@@ -30,68 +30,98 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/40 via-transparent to-purple-950/30 pointer-events-none" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="relative z-10 max-w-3xl mx-auto px-6 py-12 flex flex-col min-h-screen">
-        {/* Header */}
-        <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-purple-300 bg-clip-text text-transparent">
-            AI GODMODE ENGINE
-          </h1>
-          <p className="mt-4 text-gray-400 text-lg max-w-xl mx-auto">
-            Plateforme IA full-stack avec agents autonomes, raisonnement avancé, swarm, infinity engine, vision et voice.
-          </p>
-        </header>
-
-        {/* Main Card */}
-        <div className="flex-1 flex flex-col">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Décris la tâche complexe que tu veux que l'IA exécute..."
-              className="w-full h-40 bg-transparent border-none outline-none resize-none text-lg text-white placeholder:text-gray-500"
-            />
-
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="px-8 py-3 rounded-xl font-medium bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white shadow-lg shadow-emerald-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Godmode en cours..." : "Lancer GODMODE ENGINE"}
-              </button>
-            </div>
-          </div>
-
-          {/* Result Zone */}
-          {(result || loading) && (
-            <div className="mt-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-              <h2 className="text-sm font-medium text-gray-400 mb-3 uppercase tracking-wider">
-                Résultat
-              </h2>
-              <div className="text-gray-200 whitespace-pre-wrap leading-relaxed">
-                {loading ? (
-                  <div className="flex items-center gap-3 text-gray-400">
-                    <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-                    Les agents travaillent...
-                  </div>
-                ) : (
-                  result
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <footer className="mt-12 text-center text-sm text-gray-600">
-          AI GODMODE ENGINE • Powered by advanced multi-agent systems
-        </footer>
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #0a0a0f 0%, #0f0f1a 50%, #0a0a12 100%)",
+      color: "white",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      padding: "40px 20px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center"
+    }}>
+      
+      {/* Header */}
+      <div style={{ textAlign: "center", marginBottom: "50px", maxWidth: "700px" }}>
+        <h1 style={{
+          fontSize: "42px",
+          fontWeight: "700",
+          background: "linear-gradient(90deg, #ffffff, #a5b4fc, #c4b5fd)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          marginBottom: "16px"
+        }}>
+          AI GODMODE ENGINE
+        </h1>
+        <p style={{ color: "#9ca3af", fontSize: "18px", lineHeight: "1.6" }}>
+          Plateforme IA full-stack avec agents autonomes, raisonnement avancé, swarm, infinity engine, vision et voice.
+        </p>
       </div>
-    </div>
-  );
-}
+
+      {/* Card principale */}
+      <div style={{
+        width: "100%",
+        maxWidth: "700px",
+        background: "rgba(255, 255, 255, 0.05)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        borderRadius: "20px",
+        padding: "28px",
+        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+      }}>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Décris la tâche complexe que tu veux que l'IA exécute..."
+          style={{
+            width: "100%",
+            height: "160px",
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            color: "white",
+            fontSize: "17px",
+            resize: "none",
+            lineHeight: "1.6"
+          }}
+        />
+
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            style={{
+              padding: "14px 32px",
+              borderRadius: "14px",
+              border: "none",
+              background: loading ? "#374151" : "linear-gradient(90deg, #10b981, #14b8a6)",
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "600",
+              cursor: loading ? "not-allowed" : "pointer",
+              boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.4)",
+              transition: "all 0.2s"
+            }}
+          >
+            {loading ? "Godmode en cours..." : "Lancer GODMODE ENGINE"}
+          </button>
+        </div>
+      </div>
+
+      {/* Zone Résultat */}
+      {(result || loading) && (
+        <div style={{
+          width: "100%",
+          maxWidth: "700px",
+          marginTop: "30px",
+          background: "rgba(255, 255, 255, 0.05)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "20px",
+          padding: "28px"
+        }}>
+          <h2 style={{
+            fontSize: "13px",
+            color: "#9ca3af",
+            textTransform: "uppercase",
+            letterSpacing: "
