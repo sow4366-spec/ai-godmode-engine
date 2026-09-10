@@ -3,9 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { infinityEngine } from "@/lib/ai/infinity";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST(req: NextRequest) {
   try {
     const { prompt } = await req.json();
+
     if (!prompt?.trim()) {
       return NextResponse.json({ error: "Prompt requis" }, { status: 400 });
     }
@@ -23,9 +27,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ result });
   } catch (error: any) {
-    console.error(error);
+    console.error("Erreur dans /api/infinity:", error);
     return NextResponse.json(
-      { error: error.message || "Erreur" },
+      { error: error.message || "Erreur interne" },
       { status: 500 }
     );
   }
