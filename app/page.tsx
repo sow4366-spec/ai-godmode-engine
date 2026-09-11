@@ -3,125 +3,62 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [input, setInput] = useState("");
-  const [result, setResult] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    if (!input.trim()) return;
+  async function sendPrompt() {
+    if (!prompt.trim()) return;
     setLoading(true);
-    setResult("");
 
-    try {
-      const res = await fetch("/api/godmode", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input }),
-      });
+    const res = await fetch("/api/godmode", {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
+    });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur serveur");
-      setResult(data.result);
-    } catch (err: any) {
-      setResult("Erreur : " + (err.message || "Erreur interne du serveur"));
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = await res.json();
+    setResponse(data.answer || "Erreur serveur");
+    setLoading(false);
+  }
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #0a0a0f 0%, #0f0f1a 50%, #0a0a12 100%)",
-      color: "white",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      padding: "40px 20px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center"
-    }}>
-      
-      {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: "50px", maxWidth: "700px" }}>
-        <h1 style={{
-          fontSize: "42px",
-          fontWeight: "700",
-          background: "linear-gradient(90deg, #ffffff, #a5b4fc, #c4b5fd)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          marginBottom: "16px"
-        }}>
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white px-6 py-10">
+      <div className="max-w-3xl mx-auto">
+        
+        {/* HEADER */}
+        <h1 className="text-center text-5xl font-extrabold mb-10 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent drop-shadow-lg">
           AI GODMODE ENGINE
         </h1>
-        <p style={{ color: "#9ca3af", fontSize: "18px", lineHeight: "1.6" }}>
-          Plateforme IA full-stack avec agents autonomes, raisonnement avancé, swarm, infinity engine, vision et voice.
-        </p>
-      </div>
 
-      {/* Card principale */}
-      <div style={{
-        width: "100%",
-        maxWidth: "700px",
-        background: "rgba(255, 255, 255, 0.05)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        borderRadius: "20px",
-        padding: "28px",
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
-      }}>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Décris la tâche complexe que tu veux que l'IA exécute..."
-          style={{
-            width: "100%",
-            height: "160px",
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            color: "white",
-            fontSize: "17px",
-            resize: "none",
-            lineHeight: "1.6"
-          }}
-        />
+        {/* CARD */}
+        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
+          
+          {/* INPUT */}
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Pose ta question à l’IA…"
+            className="w-full h-40 p-4 rounded-xl bg-black/40 border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg"
+          />
 
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+          {/* BUTTON */}
           <button
-            onClick={handleSubmit}
+            onClick={sendPrompt}
             disabled={loading}
-            style={{
-              padding: "14px 32px",
-              borderRadius: "14px",
-              border: "none",
-              background: loading ? "#374151" : "linear-gradient(90deg, #10b981, #14b8a6)",
-              color: "white",
-              fontSize: "16px",
-              fontWeight: "600",
-              cursor: loading ? "not-allowed" : "pointer",
-              boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.4)",
-              transition: "all 0.2s"
-            }}
+            className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all font-bold text-lg shadow-lg disabled:opacity-50"
           >
-            {loading ? "Godmode en cours..." : "Lancer GODMODE ENGINE"}
+            {loading ? "Analyse en cours…" : "Envoyer"}
           </button>
         </div>
-      </div>
 
-      {/* Zone Résultat */}
-      {(result || loading) && (
-        <div style={{
-          width: "100%",
-          maxWidth: "700px",
-          marginTop: "30px",
-          background: "rgba(255, 255, 255, 0.05)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "20px",
-          padding: "28px"
-        }}>
-          <h2 style={{
-            fontSize: "13px",
-            color: "#9ca3af",
-            textTransform: "uppercase",
-            letterSpacing: "
+        {/* RESPONSE */}
+        {response && (
+          <div className="mt-10 p-6 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-xl animate-fadeIn">
+            <h2 className="text-2xl font-bold mb-4 text-purple-300">Réponse :</h2>
+            <p className="text-lg leading-relaxed">{response}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
